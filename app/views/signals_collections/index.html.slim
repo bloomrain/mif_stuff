@@ -1,0 +1,20 @@
+h1 Listing signals
+
+table
+  thead: tr
+      th Filename
+      th Signals number
+      th
+      th
+      th
+  tbody
+    - signals_collections.each do |signals_collection|
+      tr
+        td= signals_collection.file_file_name
+        td= signals_collection.signals_data.length
+        td= link_to 'Chart', chart_signals_collection_path(signals_collection)
+        td= link_to 'Edit', edit_signals_collection_path(signals_collection)
+        td= link_to 'Destroy', signals_collection, method: :delete, data: { confirm: 'Are you sure?' }
+br
+
+= link_to 'New signal', new_signals_collection_path

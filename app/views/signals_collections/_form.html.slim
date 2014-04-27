@@ -1,0 +1,22 @@
+= form_for(signals_collection) do |f|
+  - if signals_collection.errors.any?
+    #error_explanation
+      h2
+        = pluralize(signals_collection.errors.count, "error")
+        |  prohibited this signals collection from being saved:
+
+      ul
+        - signals_collection.errors.full_messages.each do |msg|
+          li= msg
+
+  .field
+    = f.label :url
+    '
+    = f.url_field :url
+
+  .field
+    = f.label :file
+    '
+    = f.file_field :file
+
+  .actions= f.submit

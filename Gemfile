@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.0'
+gem 'therubyracer'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 # Use SCSS for stylesheets
@@ -25,6 +26,24 @@ gem 'sdoc', '~> 0.4.0',          group: :doc
 
 # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
 gem 'spring',        group: :development
+
+gem "migrant"
+gem 'slim'
+gem 'underscore-rails'
+gem 'decent_exposure'
+gem 'paperclip'
+gem 'chartkick'
+gem 'rubystats'
+
+group :development, :test do
+  gem 'rspec'
+  gem 'better_errors'
+  gem 'binding_of_caller'
+  gem 'factory_girl'
+  gem "rspec-rails"
+  gem "factory_girl_rails"
+  gem "debugger"
+end
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'

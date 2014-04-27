@@ -1,0 +1,38 @@
+h1= @bitmap.filename
+h2= link_to @bitmap.url, @bitmap.url
+.field
+  = form_tag do
+    = label_tag :r, 'r :'
+    = text_field_tag :r, '0', class: 'r-input', style: 'width: 50px'
+    br
+    = label_tag :k, '  k :'
+    = text_field_tag :k, '0', class: 'k-input', style: 'width: 50px'
+    br
+    = label_tag :resolution, '  resolution :'
+    = text_field_tag :resolution, '800', class: 'resolution-input', style: 'width: 50px'
+    br
+    = label_tag :offset, '  offset :'
+    = text_field_tag :offset, '0', class: 'offset-input', style: 'width: 50px'
+    br
+    = submit_tag 'generate', id: 'generate-svg'
+
+= image_tag image_bitmap_path(format: :svg, r: params[:r]), id: 'graphic', "data-default-src" => image_bitmap_path(format: :svg)
+'
+= image_tag chart_bitmap_path(format: :svg), id: 'chart', "data-default-src" => chart_bitmap_path(format: :svg)
+
+javascript:
+  $('#generate-svg').on('click', function(e) {
+    e.preventDefault();
+    var r = $('.r-input').val();
+    var k = $('.k-input').val();
+    var res = $('.resolution-input').val();
+    var offset = $('.offset-input').val();
+
+    var query = "?r=" + r + "&k=" + k + "&res=" + res + "&offset=" + offset;
+
+    var dafaultSrc = $('#graphic').data('default-src');
+    $('#graphic').prop('src', dafaultSrc + query);
+
+    dafaultSrc = $('#chart').data('default-src');
+    $('#chart').prop('src', dafaultSrc + query);
+  });

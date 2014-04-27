@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Filename:</strong>
+  <%= @bitmap.filename %>
+</p>
+
+<p>
+  <strong>Data:</strong>
+  <%= @bitmap.data %>
+</p>
+
+<%= link_to 'Edit', edit_bitmap_path(@bitmap) %> |
+<%= link_to 'Back', bitmaps_path %>
