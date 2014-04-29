@@ -17,7 +17,7 @@ describe SignalsTransformer do
     end
 
     it 'fills missing signals with 0 values' do
-      expect(subject.signals[70]).to eq(0.0)
+      expect(subject.signals.values.last).to eq(0.0)
     end
   end
 
@@ -38,11 +38,10 @@ describe SignalsTransformer do
   describe '#fourier_signals' do
     it 'should be very similar to original signals' do
       fourier_signals = subject.fourier
-      expect(fourier_signals).should == {}
-      expect(fourier_signals[10].real).to be_within(0.000001).of(5)
-      expect(fourier_signals[30].real).to be_within(0.000001).of(12)
-      expect(fourier_signals[50].real).to be_within(0.000001).of(99)
-      expect(fourier_signals[70].real).to be_within(0.000001).of(0)
+      expect(fourier_signals.values[0].real).to be_within(0.000001).of(5)
+      expect(fourier_signals.values[1].real).to be_within(0.000001).of(12)
+      expect(fourier_signals.values[2].real).to be_within(0.000001).of(99)
+      expect(fourier_signals.values[3].real).to be_within(0.000001).of(0)
     end
   end
 

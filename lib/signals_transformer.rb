@@ -11,7 +11,7 @@ class SignalsTransformer
 
   def fourier(options = {})
     @fourier ||= {}
-    @fourier[options.to_s] ||= begin
+    @fourier[options.to_json] ||= begin
       fourier = {}
 
       signals.keys.each.with_index do |key, i|
@@ -73,6 +73,8 @@ class SignalsTransformer
       delta_params = {years: 1}
     elsif before_last_key.split('-').size == 2
       delta_params = {months: 1}
+    elsif before_last_key.split('-').size == 3
+      delta_params = {days: 1}
     else
       delta = last_key - before_last_key
     end
