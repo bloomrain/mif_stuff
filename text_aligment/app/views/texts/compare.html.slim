@@ -1,0 +1,11 @@
+- lt_text = text.lt.split("\n").select(&:present?)
+- en_text = text.en.split("\n").select(&:present?)
+table
+  - [lt_text.length, en_text.length].max.times do |i|
+    tr.paragraph-comparison
+      td.lt-paragraph= lt_text[i]
+      td.paragraph-comparison 20%
+      td.en-paragraph= en_text[i]
+
+javascript:
+  window.paragraphComparison = #{{ text.paragraph_comparison.to_json }}
