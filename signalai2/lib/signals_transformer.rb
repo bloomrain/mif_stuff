@@ -28,7 +28,8 @@ class SignalsTransformer
 
   def n_ck(k)
     k2 = k - 1 - n / 2
-    if from_ck_number.present? and k > from_ck_number and k < n - 1 - from_ck_number
+    p "(from_ck_number < k and k < n - 1 - from_ck_number) :: (#{from_ck_number} < #{k} and #{k} < #{n - 1 - from_ck_number}) :: #{(from_ck_number < k and k < n - 1 - from_ck_number)}" if from_ck_number.present?
+    if from_ck_number.present? and (from_ck_number < k or k < n - 1 - from_ck_number)
       return Complex(0.0, 0.0)
     end
 
@@ -107,7 +108,7 @@ class SignalsTransformer
   end
 
   def power_spectrum
-    (0...(n / 2)).inject({}) do |result, k|
+    (0...n).inject({}) do |result, k|
       result[k] = c(k).abs.real.to_f**2
       result
     end
@@ -173,7 +174,7 @@ class SignalsTransformer
 
           splited_signals[key] = signals[key]
         end
-        SignalsTransformer.new(splited_signals, options)
+        SignalsTransformer.new(splited_signals, options.slice(:noise))
       end
     end
   end

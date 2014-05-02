@@ -7,7 +7,7 @@ h1 Noise
       li: label
         = radio_button_tag :noise_type, :random_scope, noise_type == 'random_scope'
         | Random with interval
-        ' 
+        '
         = number_field_tag :min_random, min_random, placeholder: 'min random'
         '  -
         = number_field_tag :max_random, max_random, placeholder: 'max random'
