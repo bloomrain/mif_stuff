@@ -1,10 +1,10 @@
 = form_for text do |f|
   .field-left
-    = f.label :lt
+    = f.label :native
     br
-    = f.text_area :lt, rows: 30
+    = f.text_area :native, rows: 30
   .field-right
-    = f.label :en
+    = f.label :foreign
     br
-    = f.text_area :en, rows: 30
+    = f.text_area :foreign, rows: 30
   .field= f.submit

@@ -10,8 +10,8 @@ table
   tbody
     - texts.each do |text|
       tr
-        td= truncate(text.lt, length: 100)
-        td= truncate(text.en, length: 100)
+        td= truncate(text.native, length: 100)
+        td= truncate(text.foreign, length: 100)
         td
           = link_to 'Edit', edit_text_path(text)
           '  |

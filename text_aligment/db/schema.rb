@@ -11,11 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140502183337) do
+ActiveRecord::Schema.define(version: 20140502195102) do
 
   create_table "texts", force: true do |t|
-    t.text     "lt"
-    t.text     "en"
+    t.text     "native"
+    t.text     "foreign"
     t.datetime "updated_at"
     t.datetime "created_at"
   end

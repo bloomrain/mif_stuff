@@ -1,42 +1,47 @@
 class Text < ActiveRecord::Base
   structure do
-    lt :text
-    en :text
+    native :text
+    foreign :text
 
     timestamps
   end
 
   def paragraph_comparison
     comparison = {}
-    max_paragraphs.times do |lt_index|
-      max_paragraphs.times do |en_index|
-        lt_key = "LT#{lt_index}"
-        en_key = "EN#{en_index}"
-        ratio = min_paragraphs.to_f / max_paragraphs
-        comparison[lt_key] ||= {}
-        comparison[en_key] ||= {}
+    native_paragraphs.length.times do |native_index|
+      en_paragraphs.length.times do |foreign_index|
+        native_key = "N#{native_index}"
+        foreign_key = "F#{en_index}"
+        ratio = 0.0
+        if native_index == en_index
+          ratio = min_paragraphs.to_f / max_paragraphs
+        elsif (native_index - en_index).abs == 1
+          ratio = (1.0 - min_paragraphs.to_f / max_paragraphs) / 2
+        end
+        comparison[native_key] ||= {}
+        comparison[foreign_key] ||= {}
 
-        comparison[lt_key][en_key] = ratio
-        comparison[en_key][lt_key] = ratio
+        comparison[native_key][foreign_key] = ratio
+        comparison[foreign_key][native_key] = ratio
       end
     end
     comparison
   end
 
-  def lt_paragraphs
-    lt.split("\n").select(&:present?)
+  def native_paragraphs
+    native.split("\n").select(&:present?)
   end
 
-  def en_paragraphs
-    lt.split("\n").select(&:present?)
+  def foreign_paragraphs
+    foreign.split("\n").select(&:present?)
   end
 
   def max_paragraphs
-    [lt_paragraphs.length, en_paragraphs.length].max
+    [native_paragraphs.length, foreign_paragraphs.length].max
   end
 
   def min_paragraphs
-    [lt_paragraphs.length, en_paragraphs.length].min
+    [native_paragraphs.length, foreign_paragraphs.length].min
   end
 end
 
