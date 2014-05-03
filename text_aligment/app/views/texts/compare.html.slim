@@ -1,8 +1,8 @@
-table
+table.paragraphs-comparison
   - text.max_paragraphs.times do |i|
     tr.paragraph-comparison
       td.native-paragraph[data-paragraph=i]= text.native_paragraphs[i]
-      td.paragraph-comparison 20%
+      td.paragraph-percents
       td.foreign-paragraph[data-paragraph=i]= text.foreign_paragraphs[i]
 
 javascript:

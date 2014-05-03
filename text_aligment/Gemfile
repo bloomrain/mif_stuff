@@ -32,6 +32,7 @@ gem 'decent_exposure'
 gem 'paperclip'
 gem 'chartkick'
 gem 'rubystats'
+gem 'font-awesome-rails'
 
 group :development, :test do
   gem 'rspec'

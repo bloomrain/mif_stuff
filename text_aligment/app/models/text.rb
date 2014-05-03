@@ -8,26 +8,9 @@ class Text < ActiveRecord::Base
     timestamps
   end
 
-  def paragraph_comparison
-    comparison = {}
-    native_paragraphs.length.times do |native_index|
-      foreign_paragraphs.length.times do |foreign_index|
-        native_key = "N#{native_index}"
-        foreign_key = "F#{foreign_index}"
-        ratio = 0.0
-        if native_index == foreign_index
-          ratio = min_paragraphs.to_f / max_paragraphs
-        elsif (native_index - foreign_index).abs == 1
-          ratio = (1.0 - min_paragraphs.to_f / max_paragraphs) / 2
-        end
-        comparison[native_key] ||= {}
-        comparison[foreign_key] ||= {}
-
-        comparison[native_key][foreign_key] = ratio
-        comparison[foreign_key][native_key] = ratio
-      end
-    end
-    comparison
+  def paragraph_comparison(strategy = :blind)
+    comparator = "AlignmentStrategy::#{strategy.to_s.camelcase}".constantize.new(self)
+    comparator.alignment
   end
 
   def native_paragraphs
