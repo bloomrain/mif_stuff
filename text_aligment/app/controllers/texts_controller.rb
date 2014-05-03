@@ -17,6 +17,6 @@ class TextsController < ApplicationController
   end
 
   def text_attributes
-    params.require(:text).permit(:lt, :en)
+    params.require(:text).permit(:native, :foreign)
   end
 end

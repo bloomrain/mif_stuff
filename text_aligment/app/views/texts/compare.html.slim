@@ -1,9 +1,10 @@
 table
   - text.max_paragraphs.times do |i|
     tr.paragraph-comparison
-      td.lt-paragraph= text.native_paragraphs[i]
+      td.native-paragraph[data-paragraph=i]= text.native_paragraphs[i]
       td.paragraph-comparison 20%
-      td.en-paragraph= text.foreign_paragraphs[i]
+      td.foreign-paragraph[data-paragraph=i]= text.foreign_paragraphs[i]
 
 javascript:
-  window.paragraphComparison = #{{ text.paragraph_comparison.to_json }}
+  var paragraphComparison = #{{ text.paragraph_comparison.to_json }};
+  new TextComparator(paragraphComparison);

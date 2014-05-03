@@ -23,6 +23,10 @@
   }
 }
 
+table.paragraphs-comparison td {
+  border-bottom: 1px solid #AAA;
+}
+
 tr.paragraph-comparison:hover {
   td{ background: #EEE; }
 }
