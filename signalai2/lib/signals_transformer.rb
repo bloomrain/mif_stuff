@@ -1,10 +1,11 @@
 class SignalsTransformer
-  attr_reader :original_signals, :noise, :from_ck_number, :till_ck_number, :options
+  attr_reader :original_signals, :noise, :ck_noise, :from_ck_number, :till_ck_number, :options
 
   def initialize(signals, options = {})
     @original_signals = signals
     @options = options
     @noise = options[:noise] || []
+    @ck_noise = options[:ck_noise] || []
     @from_ck_number = options[:from_ck_number]
     @till_ck_number = options[:till_ck_number]
   end
@@ -23,20 +24,24 @@ class SignalsTransformer
 
   def c(k)
     @c ||= {}
-    @c[k] ||= n_ck(k) / n.to_f
+    @c[options.to_json] ||= {}
+    @c[options.to_json][k] ||= if from_ck_number.present? and ((from_ck_number < k and k <= n / 2) or (k > n / 2 and from_ck_number < n - k ))
+      Complex(0.0, 0.0)
+    else
+      n_ck(k) / n.to_f + ck_noise[k].to_f
+    end
+
+  end
+
+  def all_ck
+    (0...n).map{|k| c(k)}
   end
 
   def n_ck(k)
     k2 = k - 1 - n / 2
-    p "(from_ck_number < k and k < n - 1 - from_ck_number) :: (#{from_ck_number} < #{k} and #{k} < #{n - 1 - from_ck_number}) :: #{(from_ck_number < k and k < n - 1 - from_ck_number)}" if from_ck_number.present?
-    if from_ck_number.present? and (from_ck_number < k or k < n - 1 - from_ck_number)
-      return Complex(0.0, 0.0)
-    end
-
-    #return Complex(0.0, 0.0)  and k > from_ck_number
-    #return Complex(0.0, 0.0) if till_ck_number.present? and k > till_ck_number
     @n_ck ||= {}
-    @n_ck[k] ||= if n == 1
+    @n_ck[options.to_json] ||= {}
+    @n_ck[options.to_json][k] ||= if n == 1
       (0...n).to_a.map do |j|
         f(j).to_c * w(j*k)
       end.sum
