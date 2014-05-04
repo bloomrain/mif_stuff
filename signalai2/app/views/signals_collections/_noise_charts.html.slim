@@ -31,7 +31,12 @@ hr
 / = line_chart signals_collection.signals(noise: noise).formated, colors: ['orange']
 
 h2 Original signals + c<sub>k</sub> noise
-table
+table.CSSTableGenerator
+  tr
+    th No
+    th Original
+    th Noise
+    th Noise + filter
   - original_cks = signals_collection.signals.all_ck
   - filter_cks = signals_collection.signals(ck_noise: ck_noise, from_ck_number: filter_ck).all_ck
   - signals_collection.signals(ck_noise: ck_noise).all_ck.each.with_index do |noise_ck, i|
