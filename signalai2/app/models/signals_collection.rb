@@ -14,22 +14,23 @@ class SignalsCollection < ActiveRecord::Base
   end
 
   def signals_data(noise = [])
-    return @signals unless @signals.nil?
+    return @signals_data unless @signals_data.nil?
 
     require 'csv'
-    @signals = {}
-    return @signals if file.path.blank?
+    @signals_data = {}
+    return @signals_data if file.path.blank?
 
     noise_index = 0
     CSV.parse(File.read(file.path), { headers: true }) do |row|
-      @signals[row.to_hash.values.first] = row.to_hash.values.last.to_f
-      @signals[row.to_hash.values.first] += noise[noise_index].to_f
+      @signals_data[row.to_hash.values.first] = row.to_hash.values.last.to_f
+      @signals_data[row.to_hash.values.first] += noise[noise_index].to_f
       noise_index += 1
     end
-    @signals
+    @signals_data
   end
 
   def signals(options = {})
-    SignalsTransformer.new(signals_data, options)
+    @signals ||= {}
+    @signals[options.to_json] ||= SignalsTransformer.new(signals_data, options)
   end
 end

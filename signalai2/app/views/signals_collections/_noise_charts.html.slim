@@ -56,22 +56,22 @@ table.CSSTableGenerator
       data: signals_collection.signals(ck_noise: ck_noise).fourier\
     }\
 
-  ], library: {dataOpacity: 0.0, explorer: {}}
+  ], library: {dataOpacity: 0.0}, height: '750px'
 
 
 h2 Power spectrum
-= column_chart signals_collection.signals(noise: noise).power_spectrum
+= column_chart signals_collection.signals(ck_noise: ck_noise).power_spectrum, height: '750px'
 h2 Original signals
 = line_chart signals_collection.signals.formated, colors: ['orange']
 
 h2 Filter
 = line_chart [\
     {\
-      name: 'fourier',\
-      data: signals_collection.signals.fourier\
+      name: 'original',\
+      data: signals_collection.signals.formated\
     },\
     {\
       name: 'filter + noise', \
       data: signals_collection.signals(ck_noise: ck_noise, from_ck_number: filter_ck).fourier\
     }\
-  ]
+  ], library: {dataOpacity: 0.0}, height: '750px'

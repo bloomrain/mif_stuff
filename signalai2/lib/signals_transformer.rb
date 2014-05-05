@@ -11,8 +11,7 @@ class SignalsTransformer
   end
 
   def fourier(options = {})
-    @fourier ||= {}
-    @fourier[options.to_json] ||= begin
+    @fourier ||= begin
       fourier = {}
 
       signals.keys.each.with_index do |key, i|
@@ -24,13 +23,11 @@ class SignalsTransformer
 
   def c(k)
     @c ||= {}
-    @c[options.to_json] ||= {}
-    @c[options.to_json][k] ||= if from_ck_number.present? and ((from_ck_number < k and k <= n / 2) or (k > n / 2 and from_ck_number < n - k ))
+    @c[k] ||= if from_ck_number.present? and ((from_ck_number < k and k <= n / 2) or (k > n / 2 and from_ck_number < n - k ))
       Complex(0.0, 0.0)
     else
       n_ck(k) / n.to_f + ck_noise[k].to_f
     end
-
   end
 
   def all_ck
@@ -40,8 +37,7 @@ class SignalsTransformer
   def n_ck(k)
     k2 = k - 1 - n / 2
     @n_ck ||= {}
-    @n_ck[options.to_json] ||= {}
-    @n_ck[options.to_json][k] ||= if n == 1
+    @n_ck[k] ||= if n == 1
       (0...n).to_a.map do |j|
         f(j).to_c * w(j*k)
       end.sum
@@ -113,7 +109,7 @@ class SignalsTransformer
   end
 
   def power_spectrum
-    (0...n).inject({}) do |result, k|
+    (0...(n/2)).inject({}) do |result, k|
       result[k] = c(k).abs.real.to_f**2
       result
     end
@@ -141,7 +137,8 @@ class SignalsTransformer
   end
 
   def w(pow = 1, n = self.n)
-    Math::E.to_c ** (-Complex::I * 2 * Math::PI * pow / n.to_f)
+    @w ||= {}
+    @w[[pow, n]] ||= Math::E.to_c ** (-Complex::I * 2 * Math::PI * pow / n.to_f)
   end
 
   def fake_signals_count
