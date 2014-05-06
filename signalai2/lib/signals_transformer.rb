@@ -23,10 +23,12 @@ class SignalsTransformer
 
   def c(k)
     @c ||= {}
-    @c[k] ||= if from_ck_number.present? and ((from_ck_number < k and k <= n / 2) or (k > n / 2 and from_ck_number < n - k ))
+    @c[k] ||= if from_ck_number.present? and ((from_ck_number <= k and k <= n / 2) or (k > n / 2 and from_ck_number <= n - k ))
       Complex(0.0, 0.0)
     else
-      n_ck(k) / n.to_f + ck_noise[k].to_f
+      noise_k = k
+      noise_k = n - k if noise_k > n / 2
+      (ck_noise[noise_k] || 1) * n_ck(k) / n.to_f
     end
   end
 

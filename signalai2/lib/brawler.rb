@@ -34,6 +34,6 @@ class Brawler
 
   def random(min_random, max_random)
     distance = (max_random - min_random).abs
-    (0...signals.length).to_a.map{ rand(distance) + min_random }
+    (0...signals.length).to_a.map{ rand.to_f * distance + min_random }
   end
 end
