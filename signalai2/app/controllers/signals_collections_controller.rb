@@ -26,7 +26,25 @@ class SignalsCollectionsController < ApplicationController
     end
   }
 
-  expose(:filter_ck){ (params[:filter_ck] || 80).to_i }
+  expose(:filter_ck_list){ (params[:filter_ck_list] || ["80"]).map(&:to_i) }
+
+  expose(:default_chart_options) {
+    {
+      library: {
+        dataOpacity: 0.0,
+        fontSize: '15px',
+        vAxis: {
+          textStyle: {fontSize: '17px;'}
+        },
+        hAxis: {
+          textStyle: {fontSize: '17px;'}
+        }
+      },
+      height: '750px',
+      colors: ['black'],
+      discrete: true
+    }
+  }
 
   def create
     SignalsCollection.create!(signals_collection_params)

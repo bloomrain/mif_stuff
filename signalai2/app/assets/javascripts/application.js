@@ -12,5 +12,6 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require chartkick_initializer
 //= require chartkick
 //= require_tree .

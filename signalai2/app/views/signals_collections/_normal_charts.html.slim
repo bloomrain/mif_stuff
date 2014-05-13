@@ -1,13 +1,6 @@
-h1= link_to signals_collection.url, signals_collection.url
-hr
-h2 Original signals #{signals_collection.signals.formated.length}
-= line_chart signals_collection.signals.formated, colors: ['blue']
-br
-hr
-br
 
-h2 Fourier signals
-= line_chart signals_collection.signals.fourier, colors: ['red']
+/ h2 Original signals #{signals_collection.signals.formated.length}
+/ = line_chart signals_collection.signals.formated, default_chart_options.merge(colors: ['black', 'red'])
 br
 hr
 br

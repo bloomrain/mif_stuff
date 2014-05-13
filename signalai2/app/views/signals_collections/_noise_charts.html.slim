@@ -3,7 +3,7 @@ h1 Options
   p
     = label_tag :ck_noise_interval, 'Hz noise interval'
     '
-    = select_tag :ck_noise_interval_from, options_for_select((0..signals_collection.signals.n/2).map{|k| [human_hz_from_k(k), k] }, ck_noise_interval_from)
+    = select_tag :ck_noise_interval_from, options_for_select((0..signals_collection.signals.n/2).map{|k| [human_hz_from_k(k), k] }, ck_noise_interval_from), class: :number_select
     '  -
     = select_tag :ck_noise_interval_till, options_for_select((0..signals_collection.signals.n/2).map{|k| [human_hz_from_k(k), k] }, ck_noise_interval_till)
   p
@@ -20,9 +20,18 @@ h1 Options
         = radio_button_tag :noise_type, :brownian, noise_type == 'brownian'
         | Brownian
   p
-    label
-      | Ck filter
-      = select_tag :filter_ck, options_for_select((0..signals_collection.signals.n/2).map{|k| [human_hz_from_k(k), k] }, filter_ck)
+    | Ck filter
+    .compact-container: table.filter-options
+      - (0..signals_collection.signals.n/2).to_a.in_groups_of(5).each do |k_group|
+        tr
+          - k_group.each do |k|
+            td: label
+              - next if k.nil?
+              = check_box_tag :"filter_ck_list[]", k, filter_ck_list.include?(k)
+              - if filter_ck_list.include?(k)
+                b= human_hz_from_k(k)
+              - else
+                = human_hz_from_k(k)
 
   p= submit_tag 'ok'
 hr
@@ -32,14 +41,14 @@ hr
 / = line_chart signals_collection.signals(noise: noise).formated, colors: ['orange']
 
 h2 Original signals + c<sub>k</sub> noise
-table.CSSTableGenerator
+.compact-container: table.CSSTableGenerator
   tr
     th Hz
     th Original
     th Noise
     th Noise + filter
   - original_cks = signals_collection.signals.all_ck
-  - filter_cks = signals_collection.signals(ck_noise: ck_noise, from_ck_number: filter_ck).all_ck
+  - filter_cks = signals_collection.signals(ck_noise: ck_noise, from_ck_number: filter_ck_list.first).all_ck
   - signals_collection.signals(ck_noise: ck_noise).all_ck.each.with_index do |noise_ck, i|
     tr
       td[style='text-align: right;'] #{human_hz_from_k i}.
@@ -47,32 +56,6 @@ table.CSSTableGenerator
       td= noise_ck
       td= filter_cks[i]
 
-= line_chart [\
-    {\
-      name: 'original',\
-      data: signals_collection.signals.formated\
-    },\
-    {\
-      name: 'fourier + ck noise',\
-      data: signals_collection.signals(ck_noise: ck_noise).fourier\
-    }\
+/ = render 'hz_noise_charts'
 
-  ], library: {dataOpacity: 0.0}, height: '750px'
-
-
-h2 Power spectrum
-= column_chart signals_collection.signals(ck_noise: ck_noise).power_spectrum, height: '750px'
-h2 Original signals
-= line_chart signals_collection.signals.formated, colors: ['orange']
-
-h2 Filter
-= line_chart [\
-    {\
-      name: 'original',\
-      data: signals_collection.signals.formated\
-    },\
-    {\
-      name: 'filter + noise', \
-      data: signals_collection.signals(ck_noise: ck_noise, from_ck_number: filter_ck).fourier\
-    }\
-  ], library: {dataOpacity: 0.0}, height: '750px'
+= render 'standart_noise_charts'

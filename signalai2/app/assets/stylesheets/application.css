@@ -100,3 +100,13 @@ border-width:0px 0px 1px 0px;
 .CSSTableGenerator tr:first-child td:last-child{
 border-width:0px 0px 1px 1px;
 }
+.compact-container {
+  max-height: 300px;
+  overflow: auto;
+}
+
+table.filter-options {
+  td {
+    min-width: 19%;
+  }
+}

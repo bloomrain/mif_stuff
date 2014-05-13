@@ -1,0 +1,65 @@
+h2 Original signals + normal noise
+= noise
+= line_chart [\
+    {\
+      name: 'Fourier signalas',\
+      data: signals_collection.signals.fourier\
+    },\
+    {\
+      name: 'Originalus signalas',\
+      data: signals_collection.signals.formated\
+    }\
+  ], default_chart_options.merge(colors: ['red', 'black'])
+
+= line_chart [\
+    {\
+      name: 'Originalus signalas',\
+      data: signals_collection.signals.formated\
+    },\
+    {\
+      name: 'Fourier signalas',\
+      data: signals_collection.signals.fourier\
+    }\
+  ], default_chart_options.merge(colors: ['black', 'red'])
+
+= line_chart [\
+    {\
+      name: 'Užtriukšmintas signalas',\
+      data: signals_collection.signals(noise: noise).fourier\
+    },\
+    {\
+      name: 'Originalus signalas',\
+      data: signals_collection.signals.formated\
+    }\
+  ], default_chart_options.merge(colors: ['red', 'black'])
+
+h2 Power spectrum
+- power_spectrum = {}
+- signals_collection.signals(noise: noise).power_spectrum.each_pair do |k, val|
+  - power_spectrum[human_hz_from_k(k)] = val
+= area_chart power_spectrum, default_chart_options.merge(discrete: true, colors: ['orange'])
+
+- filter_ck_list.each do |filter_ck|
+  h2 Filter (from #{human_hz_from_k(filter_ck)})
+  = line_chart [\
+      {\
+        name: 'filter + noise', \
+        data: signals_collection.signals(noise: noise, from_ck_number: filter_ck).fourier\
+      },\
+      {\
+        name: 'original',\
+        data: signals_collection.signals.formated\
+      },\
+    ], default_chart_options.merge(colors: ['red', 'black'])
+
+  h3 Filter reversed (from #{human_hz_from_k(filter_ck)})
+  = line_chart [\
+      {\
+        name: 'original',\
+        data: signals_collection.signals.formated\
+      },\
+      {\
+        name: 'filter + noise', \
+        data: signals_collection.signals(noise: noise, from_ck_number: filter_ck).fourier\
+      }\
+    ], default_chart_options.merge(colors: ['black', 'red'])

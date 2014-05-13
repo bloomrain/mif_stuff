@@ -3,8 +3,15 @@
 <head>
   <title>App</title>
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag "//www.google.com/jsapi", "chartkick" %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <script>
+    var Chartkick = {"language": "lt"};
+  </script>
+  <%= javascript_include_tag "//www.google.com/jsapi" %>
+  <script>
+    google.load('visualization', '1', {'packages':['corechart'], 'language': 'lt'});
+  </script>
+
+  <%= javascript_include_tag 'application' %>
   <%= csrf_meta_tags %>
 </head>
 <body>

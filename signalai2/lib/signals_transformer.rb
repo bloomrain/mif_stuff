@@ -123,7 +123,7 @@ class SignalsTransformer
 
   def noisefy_signals!(signals)
     signals.keys.sort.each.with_index do |key, i|
-      signals[key] += noise[i].to_f
+      signals[key] += (noise[i] == 1 ? 0 : noise[i].to_f)
     end
   end
 
@@ -178,7 +178,7 @@ class SignalsTransformer
 
           splited_signals[key] = signals[key]
         end
-        SignalsTransformer.new(splited_signals, options.slice(:noise))
+        SignalsTransformer.new(splited_signals, {})
       end
     end
   end
