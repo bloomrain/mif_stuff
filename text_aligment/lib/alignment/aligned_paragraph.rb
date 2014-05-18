@@ -1,7 +1,7 @@
 module Alignment
   class AlignedParagraph
     UNCHANGABLE_ATTRIBUTES = %i[probability position strategy]
-    attr_reader *(UNCHANGABLE_ATTRIBUTES + [:native_paragraphs, :foreign_paragraphs])
+    attr_reader *(UNCHANGABLE_ATTRIBUTES)
 
     def initialize(params = {})
       UNCHANGABLE_ATTRIBUTES.each do |attribute|
@@ -13,21 +13,23 @@ module Alignment
       end
     end
 
-    def native_paragraphs
-      @native_paragraphs ||= []
-    end
-
-    def foreign_paragraphs
-      @foreign_paragraphs ||= []
-    end
-
     [:native, :foreign].each do |p_type|
       define_method "#{p_type}_paragraphs=" do |paragraphs|
-        paragraphs_before = self.instance_variable_get("@#{p_type}_paragraphs")
-        self.instance_variable_set("@#{p_type}_paragraphs", paragraphs)
-        #reset_aligned_paragraph(paragraphs_before, nil) if paragraphs_before.present?
-        reset_aligned_paragraph(paragraphs)
-        self.public_send("#{p_type}_paragraphs")
+        @paragraphs ||= {}
+        @paragraphs[p_type] ||= []
+
+        paragraphs_before = @paragraphs[p_type]
+        @paragraphs[p_type] = paragraphs || []
+
+        reset_aligned_paragraph(paragraphs_before, nil) if paragraphs_before.present?
+        reset_aligned_paragraph(@paragraphs[p_type])
+
+        @paragraphs[p_type]
+      end
+
+      define_method "#{p_type}_paragraphs" do
+        @paragraphs ||= {}
+        @paragraphs[p_type] ||= []
       end
     end
 
@@ -74,7 +76,7 @@ module Alignment
 
     def reset_aligned_paragraph(paragraphs, aligned_paragraph = self)
       paragraphs.each do |paragraph|
-        next if paragraph.aligned_paragraph(strategy) != aligned_paragraph
+        next if paragraph.aligned_paragraph(strategy) == aligned_paragraph
         if aligned_paragraph.present?
           paragraph.aligned_paragraph = aligned_paragraph
         else

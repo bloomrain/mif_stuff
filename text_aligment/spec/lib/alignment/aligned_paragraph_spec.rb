@@ -32,15 +32,17 @@ describe Alignment::AlignedParagraph do
     end
 
     context "when changing already setted paragraphs" do
-      let(:other_native_paragraph) { Alignment::NativeParagraph.new(position: 2) }
-      let(:initial_native_paragraphs) { [ other_native_paragraph ] }
+      let(:initial_native_paragraph) { Alignment::NativeParagraph.new(position: 2) }
+      let(:initial_native_paragraphs) {
+        [ initial_native_paragraph ]
+      }
 
       it "sets native paragraphs" do
         expect {
           subject.native_paragraphs = [native_paragraph]
         }.to change {
           subject.native_paragraphs
-        }.from([other_native_paragraph]).to([native_paragraph])
+        }.from([initial_native_paragraph]).to([native_paragraph])
       end
 
       it 'sets aligned paragraph for new native paragraphs' do
@@ -55,7 +57,7 @@ describe Alignment::AlignedParagraph do
         expect {
           subject.native_paragraphs = [native_paragraph]
         }.to change {
-          other_native_paragraph.aligned_paragraph(:blind)
+          initial_native_paragraph.aligned_paragraph(:blind)
         }.from(subject).to(nil)
       end
     end
