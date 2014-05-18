@@ -21,14 +21,14 @@ module Alignment
       @foreign_paragraphs ||= []
     end
 
-    def native_paragraphs=(paragraphs)
-      @native_paragraphs = paragraphs # this part is needed in order to avoid recursion
-      @native_paragraphs = with_current_aligned_paragraph(paragraphs)
-    end
-
-    def foreign_paragraphs=(paragraphs)
-      @foreign_paragraphs = paragraphs
-      @foreign_paragraphs = with_current_aligned_paragraph(paragraphs)
+    [:native, :foreign].each do |p_type|
+      define_method "#{p_type}_paragraphs=" do |paragraphs|
+        paragraphs_before = self.instance_variable_get("@#{p_type}_paragraphs")
+        self.instance_variable_set("@#{p_type}_paragraphs", paragraphs)
+        #reset_aligned_paragraph(paragraphs_before, nil) if paragraphs_before.present?
+        reset_aligned_paragraph(paragraphs)
+        self.public_send("#{p_type}_paragraphs")
+      end
     end
 
     def max_paragraphs
@@ -72,9 +72,14 @@ module Alignment
       paragraphs.reject{ |paragraph| paragraph.aligned_paragraph(strategy) != self }
     end
 
-    def with_current_aligned_paragraph(paragraphs)
+    def reset_aligned_paragraph(paragraphs, aligned_paragraph = self)
       paragraphs.each do |paragraph|
-        paragraph.aligned_paragraph = self if paragraph.aligned_paragraph(strategy) != self
+        next if paragraph.aligned_paragraph(strategy) != aligned_paragraph
+        if aligned_paragraph.present?
+          paragraph.aligned_paragraph = aligned_paragraph
+        else
+          paragraph.unset_aligned_paragraph(strategy)
+        end
       end
       paragraphs
     end

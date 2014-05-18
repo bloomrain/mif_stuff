@@ -17,6 +17,10 @@ class Alignment::Paragraph
     type == :native
   end
 
+  def unset_aligned_paragraph(strategy)
+    @aligned_paragraphs.delete(strategy)
+  end
+
   def aligned_paragraph=(paragraph)
     return if paragraph.nil?
 
