@@ -8,40 +8,34 @@ class window.TextComparator
   initEvents: ->
     @initNativeComparison()
     @initForeignComparison()
-    
+
 
   initNativeComparison: ->
     @initParagraphComparison.bind(@)(
       @$nativeParagraphs,
-      @$foreignParagraphs, 
-      'N', 
+      @$foreignParagraphs,
+      'N',
       'fa-arrow-right'
     )
 
   initForeignComparison: ->
     @initParagraphComparison.bind(@)(
-      @$foreignParagraphs, 
-      @$nativeParagraphs, 
-      'F', 
+      @$foreignParagraphs,
+      @$nativeParagraphs,
+      'F',
       'fa-arrow-left'
     )
 
   initParagraphComparison: ($paragraphs, $otherParagraphs, paragraphPrefix, iconClass)->
     that = @
     $paragraphs.on 'mouseenter', ->
-      debugger
       $this = $(this)
-      paragraphKey = "#{paragraphPrefix}#{$this.data('paragraph')}"
-      comparisons = that.paragraphComparisons[paragraphKey]
-      $paragraphs.css("background-color": "initial")
-      $otherParagraphs.css("background-color": "initial")
-      $(@).css("background-color": "rgb(200, 255, 200)")
-      index = 0
-      for otherKey, percents of comparisons
-        $otherParagraph = $( $otherParagraphs[index] )
-        $paragraphPercent = $( that.$paragraphPercents[index] )
-        
-        $otherParagraph.css("background-color": "rgb(200, #{Math.round(200+ 55 * percents)}, 200)")
-        $paragraphPercent.css("background-color": "rgb(200, #{Math.round(200+ 55 * percents)}, 200)")
-        $paragraphPercent.html((Math.round(percents * 10000) / 100).toFixed(2) + "%&nbsp;<i class=\"fa #{iconClass}\"></i>" )
-        index += 1
+      paragraphKey = $this.parent().data('paragraph')
+      paragraphIndex = paragraphKey - 1
+      alignedParagraph = that.paragraphComparisons[paragraphIndex]
+
+      $('tr[data-paragraph] td').css("background-color": "initial")
+      $('tr[data-paragraph] td.paragraph-percents').html('0.00 %')
+      $("tr[data-paragraph='#{paragraphKey}'] td").css("background-color": "rgb(200, 255, 200)")
+      percents = "#{(alignedParagraph.probability * 100).toFixed(2)} %"
+      $("tr[data-paragraph='#{paragraphKey}'] td.paragraph-percents").html(percents)

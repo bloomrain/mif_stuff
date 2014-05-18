@@ -1,0 +1,2 @@
+class AligmentStrategy::Strategy
+end

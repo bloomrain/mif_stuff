@@ -1,10 +1,29 @@
+= text.aligned_paragraphs.as_json
 table.paragraphs-comparison
-  - text.max_paragraphs.times do |i|
-    tr.paragraph-comparison
-      td.native-paragraph[data-paragraph=i]= text.native_paragraphs[i]
-      td.paragraph-percents
-      td.foreign-paragraph[data-paragraph=i]= text.foreign_paragraphs[i]
-
+  - position_before = 0
+  - text.aligned_paragraphs.each do |aligned_paragraph|
+    - aligned_paragraph.max_paragraphs.times do |i|
+      tr.paragraph-comparison[data-paragraph=aligned_paragraph.position style="color:#{aligned_paragraph.position - position_before == 1 ? "black" : "red"}"]
+        td[style="text-align: right"]
+          = aligned_paragraph.position
+          | .
+        td[style="text-align: right"]
+          | N
+          = aligned_paragraph.native_paragraphs[i].try(:position)
+          | .
+        td[style="text-align: right"]
+          | F
+          = aligned_paragraph.foreign_paragraphs[i].try(:position)
+          | .
+        td.native-paragraph
+          = aligned_paragraph.native_paragraphs[i].try(:content)
+        td.paragraph-percents
+        td.foreign-paragraph
+          = aligned_paragraph.foreign_paragraphs[i].try(:content)
+      - position_before = aligned_paragraph.position
+= text.native_paragraphs.size
+| \
+= text.foreign_paragraphs.size
 javascript:
-  var paragraphComparison = #{{ text.paragraph_comparison.to_json }};
+  var paragraphComparison = #{{ text.aligned_paragraphs.to_json }};
   new TextComparator(paragraphComparison);
