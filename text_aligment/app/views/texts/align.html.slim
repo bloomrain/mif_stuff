@@ -1,0 +1,31 @@
+= form_tag update_alignment_text_path(text) do
+  table.paragraphs-comparison
+    - position_before = 0
+    - text.max_paragraphs.times do |i|
+      - native_paragraph = text.native_paragraphs[i]
+      - foreign_paragraph = text.foreign_paragraphs[i]
+      tr.paragraph-comparison
+        td[style="text-align: right"]
+          = i + 1
+          | .
+        td.native-paragraph= native_paragraph.try(:content)
+        td.grouping
+          - if native_paragraph.present?
+            = number_field_tag "native_paragraph_group[#{native_paragraph.position}]", text.paragraph_alignment_index_for(native_paragraph) || i, class: 'native-paragraph-group paragraph-group'
+          - else
+            .blank-field
+
+          '
+
+          - if foreign_paragraph.present?
+            = number_field_tag "foreign_paragraph_group[#{foreign_paragraph.position}]", text.paragraph_alignment_index_for(foreign_paragraph) || i, class: 'foreign-paragraph-group paragraph-group'
+          - else
+            .blank-field
+        td.foreign-paragraph= foreign_paragraph.try(:content)
+  = submit_tag 'update_alignment'
+javascript:
+  window.groupingColors = #{{ (0..text.max_paragraphs).map{ [rand(255), rand(255), rand(255)] }.to_json }};
+
+coffee:
+  $('tr.paragraph-comparison').on 'mouseenter', (e)->
+    colorizeGroups(e, 'green')

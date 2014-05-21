@@ -1,28 +1,32 @@
-table.paragraphs-comparison
-  - position_before = 0
-  - text.aligned_paragraphs.each do |aligned_paragraph|
-    - aligned_paragraph.max_paragraphs.times do |i|
-      tr.paragraph-comparison[data-paragraph=aligned_paragraph.position style="color:#{aligned_paragraph.position - position_before == 1 ? "black" : "red"}"]
-        td[style="text-align: right"]
-          = aligned_paragraph.position
-          | .
-        td[style="text-align: right"]
-          | N
-          = aligned_paragraph.native_paragraphs[i].try(:position)
-          | .
-        td[style="text-align: right"]
-          | F
-          = aligned_paragraph.foreign_paragraphs[i].try(:position)
-          | .
-        td.native-paragraph
-          = aligned_paragraph.native_paragraphs[i].try(:content)
-        td.paragraph-percents
-        td.foreign-paragraph
-          = aligned_paragraph.foreign_paragraphs[i].try(:content)
-      - position_before = aligned_paragraph.position
+- aligned_paragraphs = text.aligned_paragraphs(:manual)
+
+= text.native_paragraphs.first.aligned_paragraphs
+/ table.paragraphs-comparison
+/   - position_before = 0
+/   - text.max_paragraphs.times do |i|
+/     - native_paragraph = text.native_paragraphs[i]
+/     - foreign_paragraph = text.foreign_paragraphs[i]
+/     tr.paragraph-comparison[style="color:#{aligned_paragraph.position - position_before == 1 ? "black" : "red"}"]
+/       td[style="text-align: right" data-aligned-paragraph=native_paragraph.aligned_paragraph(:manual).position ]
+/         = aligned_paragraph.position
+/         | .
+/       td[style="text-align: right"]
+/         | N
+/         = aligned_paragraph.native_paragraphs[i].try(:position)
+/         | .
+/       td[style="text-align: right"]
+/         | F
+/         = aligned_paragraph.foreign_paragraphs[i].try(:position)
+/         | .
+/       td.native-paragraph
+/         = aligned_paragraph.native_paragraphs[i].try(:content)
+/       td.paragraph-percents
+/       td.foreign-paragraph
+/         = aligned_paragraph.foreign_paragraphs[i].try(:content)
+/     - position_before = aligned_paragraph.position
 = text.native_paragraphs.size
 | \
 = text.foreign_paragraphs.size
 javascript:
-  var paragraphComparison = #{{ text.aligned_paragraphs.to_json }};
+  var paragraphComparison = #{{ aligned_paragraphs.to_json }};
   new TextComparator(paragraphComparison);

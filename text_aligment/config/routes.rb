@@ -7,6 +7,8 @@ Rails.application.routes.draw do
   resources :texts do
     member do
       get :compare
+      get :align
+      post :update_alignment
     end
   end
   # Example of regular route:

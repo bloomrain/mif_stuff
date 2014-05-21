@@ -33,6 +33,21 @@ table.paragraphs-comparison {
     min-width: 90px;
     text-align: right;
   }
+
+  td.grouping {
+    min-width: 100px;
+    text-align: center;
+    input {
+      width: 43px;
+      text-align: right;
+    }
+    .blank-field {
+      width: 43px;
+      display: inline-block;
+      background: gray;
+      height: 15px;
+    }
+  }
 }
 
 tr.paragraph-comparison:hover {

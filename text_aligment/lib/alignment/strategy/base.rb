@@ -9,9 +9,7 @@ module Alignment
       end
 
       def aligned_paragraphs
-        @aligned_paragraphs ||= begin
-          parahraphs = align_paragraphs.sort_by(&:position)
-        end
+        @aligned_paragraphs ||= align_paragraphs.sort_by(&:position)
       end
 
       def build_aligned_paragraph(params)

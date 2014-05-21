@@ -1,6 +1,9 @@
 class Text < ActiveRecord::Base
   validates :native, presence: true
   validates :foreign, presence: true
+
+  has_many :correct_paragraph_alignments
+
   structure do
     native :text
     foreign :text
@@ -8,8 +11,17 @@ class Text < ActiveRecord::Base
     timestamps
   end
 
+  def paragraph_alignment_index_for(paragraph)
+    alignment = if paragraph.class == Alignment::NativeParagraph
+      correct_paragraph_alignments.detect{ |al| al.native_paragraph_positions.include?(paragraph.position.to_s) }
+    else
+      correct_paragraph_alignments.detect{ |al| al.foreign_paragraph_positions.include?(paragraph.position.to_s) }
+    end
+    correct_paragraph_alignments.pluck(:id).sort.index alignment.try(:id)
+  end
+
   def aligned_paragraphs(strategy = :blind)
-    alignment_runner.aligned_paragraphs
+    alignment_runner(strategy).aligned_paragraphs
   end
 
   def native_paragraphs

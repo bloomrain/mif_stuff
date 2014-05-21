@@ -11,7 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140502195102) do
+ActiveRecord::Schema.define(version: 20140521142305) do
+
+  create_table "correct_paragraph_alignments", force: true do |t|
+    t.integer  "text_id"
+    t.text     "native_paragraph_positions"
+    t.text     "foreign_paragraph_positions"
+    t.datetime "updated_at"
+    t.datetime "created_at"
+  end
+
+  add_index "correct_paragraph_alignments", ["text_id"], name: "index_correct_paragraph_alignments_on_text_id"
 
   create_table "texts", force: true do |t|
     t.text     "native"
