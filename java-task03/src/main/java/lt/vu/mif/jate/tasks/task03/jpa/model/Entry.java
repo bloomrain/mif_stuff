@@ -1,8 +1,6 @@
 package lt.vu.mif.jate.tasks.task03.jpa.model;
 
-import java.util.Objects;
-import lombok.Getter;
-import lombok.Setter;
+import java.io.Serializable;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /*
@@ -14,11 +12,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  *
  * @author gege
  */
-public abstract class Entry {
+public abstract class Entry implements Serializable {
 
-    @Getter
-    @Setter
-    private Long id;
+    abstract Long getId();
 
     @Override
     public int hashCode() {

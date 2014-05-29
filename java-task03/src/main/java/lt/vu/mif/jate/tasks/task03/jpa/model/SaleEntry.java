@@ -6,13 +6,26 @@
 
 package lt.vu.mif.jate.tasks.task03.jpa.model;
 
-import java.util.LinkedList;
-import lombok.Getter;
+import java.io.Serializable;
 
 /**
  *
  * @author gege
  */
-public abstract class SaleEntry extends Entry {
-    @Getter LinkedList<Sale> sales = new LinkedList<Sale>();
+public abstract class SaleEntry  implements Serializable {
+    public String getBrand() {
+        throw new UnsupportedOperationException("Not implemented.");
+    }
+
+    public String getName() {
+        throw new UnsupportedOperationException("Not implemented."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String getCountry() {
+        throw new UnsupportedOperationException("Not implemented."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public String getCity() {
+        throw new UnsupportedOperationException("Not implemented."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
