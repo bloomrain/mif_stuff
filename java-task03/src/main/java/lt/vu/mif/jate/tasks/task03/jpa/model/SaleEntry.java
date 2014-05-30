@@ -12,7 +12,7 @@ import java.io.Serializable;
  *
  * @author gege
  */
-public abstract class SaleEntry  implements Serializable {
+public abstract class SaleEntry extends Entry implements Serializable {
     public String getBrand() {
         throw new UnsupportedOperationException("Not implemented.");
     }

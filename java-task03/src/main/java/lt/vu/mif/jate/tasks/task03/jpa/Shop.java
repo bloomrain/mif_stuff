@@ -6,7 +6,6 @@
 
 package lt.vu.mif.jate.tasks.task03.jpa;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -67,30 +66,13 @@ class Shop {
         customers = this.db.getListOf(Customer.class);
         List<Customer> filteredCustomers;
         Integer i = 0;
-        filteredCustomers = customers.stream().filter(c -> {
-            System.out.println(c.getId());
+        filteredCustomers = customers.parallelStream().filter(c -> {
             return c.getSales().stream().anyMatch(predicate);
         } ).collect(Collectors.toList());
         
-        HashMap customersByLocation = new HashMap();
         
-        filteredCustomers.stream().forEach(customer -> {
-            String country = customer.getCountry();
-            String city = customer.getCity();
-            System.out.println(customer.getCity());
-            if (customersByLocation.get(country) == null) {
-                customersByLocation.put(country, new HashMap());
-            }
-            
-            HashMap customersByCity = (HashMap)customersByLocation.get(country);
-            
-            if (customersByCity.get(city) == null) {
-                customersByCity.put(city, new LinkedList<Customer>());
-            }
-            
-            LinkedList<Customer> locationCustomers = (LinkedList<Customer>)customersByCity.get(city);
-            locationCustomers.add(customer);
-        });
-        return customersByLocation;
+        return filteredCustomers.stream().collect(
+            Collectors.groupingBy(Customer::getCountry, Collectors.groupingBy(Customer::getCity))
+        );
     }
 }

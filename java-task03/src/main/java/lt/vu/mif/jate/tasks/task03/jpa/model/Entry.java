@@ -26,9 +26,11 @@ public abstract class Entry implements Serializable {
         if (obj == null) {
             return false;
         }
+        
         if (getClass() != obj.getClass()) {
             return false;
         }
+        
         final Entry other = (Entry) obj;
         
         return this.getId().equals(other.getId());
