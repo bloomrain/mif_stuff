@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @RequiredArgsConstructor
@@ -15,6 +16,8 @@ public class Message {
     private final Long correlation;
     private final Long op1;
     private final Long op2;
+    @Setter private Long result = null;
+    @Setter private String error = null;
 
     public Message(ServerFunction code, Long op1, Long op2) {
         this.code = code;
@@ -40,4 +43,11 @@ public class Message {
         return b;
     }
     
+    public boolean isPending() {
+        return (result == null && error == null);
+    }
+
+    public boolean isSuccess() {
+        return result != null;
+    }
 }

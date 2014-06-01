@@ -6,6 +6,16 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import lombok.Getter;
 import lt.vu.mif.jate.tasks.task03.mt.common.Response;
 
 /**
@@ -31,10 +41,19 @@ import lt.vu.mif.jate.tasks.task03.mt.common.Response;
  */
 public class Client implements AutoCloseable {
 
-    private final Socket socket;
+    @Getter private final Socket socket;
+    @Getter private BlockingQueue<Message> messagesToBeSend = new LinkedBlockingQueue<Message>();
+    @Getter private ConcurrentMap<Long, Message> messagesToBeReceived = new ConcurrentHashMap<Long, Message>();
+    
+    private static HashMap<InetSocketAddress, Integer> connections = new HashMap<InetSocketAddress, Integer>();
+    private InetSocketAddress url;
     
     public Client(InetSocketAddress addr) throws IOException {
         this.socket = new Socket(addr.getAddress(), addr.getPort());
+        this.url = addr;
+        (new Sender(this)).start();
+        (new Receiver(this)).start();
+        (new KeepAlive(this)).start();
     }
     
     public Long addition(Long op1, Long op2) throws ServerFunctionException, IOException {
@@ -62,78 +81,45 @@ public class Client implements AutoCloseable {
     }
 
     private Long exec(ServerFunction func, Long op1, Long op2) throws ServerFunctionException, IOException {
-        
-        OutputStream out = socket.getOutputStream();
-        InputStream in = socket.getInputStream();
-        
-        //
-        // Sending message
-        //
-        
-        // Building a message and a header
-        Message m = new Message(func, op1, op2);
-        ByteBuffer bytes = m.toBytes();
-        ByteBuffer sizeb = Message.toBytes(bytes.capacity());
-        
-        // Write both header and body
-        out.write(sizeb.array());
-        out.write(bytes.array());
-        
-        //
-        // Receiving message back
-        //
-        
-        // Receive header
-        ByteBuffer header = ByteBuffer.allocate(4);
-        in.read(header.array());
-        header.rewind();
-        
-        // Read body length from the header and receive body
-        ByteBuffer body = ByteBuffer.allocate(header.getInt());
-        in.read(body.array());
-        body.rewind();
-        
-        //
-        // Disassemble body and return
-        //
-        
-        // Response code
-        Response resp = Response.fromInt(body.getInt());
-        
-        // Correlation ID
-        long corr = body.getLong();
-        
-        // Check if it is my message
-        if (corr == m.getCorrelation()) {
-            switch (resp) {
-                
-                case Success:
-                    
-                    // Return result
-                    return body.getLong();
-                    
-                case Error:
-
-                    // Define byte array
-                    byte[] mb = new byte[body.remaining()];
-                    
-                    // Fill array
-                    body.get(mb);
-                    
-                    // Throw exception
-                    throw new ServerFunctionException(new String(mb));
-                    
-            }
-        } else {
-            throw new IOException("Wrong correlation id received: expected " + m.getCorrelation() + ", got " + corr);
+        if (getConnectionsNumber() > 1) {
+            throw new IOException("Socket is in usep");
         }
         
-        return 0L;
+        Message m = new Message(func, op1, op2);
+        messagesToBeSend.add(m);
+        while(m.isPending()) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(100);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+        }
+        
+        if (m.isSuccess()) {
+            return m.getResult();
+        }
+        
+        throw new ServerFunctionException(m.getError());
+        
+    }
+    
+    public int getConnectionsNumber() {
+        int connectionsNumber = 0;
+        if(connections.get(url) != null) {
+            connectionsNumber = connections.get(url);
+        };
+        return connectionsNumber;
     }
     
     @Override
     public void close() throws Exception {
         socket.close();
+        
+        int connectionsNumber = getConnectionsNumber();
+        connections.remove(url);
+        
+        if (connectionsNumber > 1) {
+            connections.put(url, connectionsNumber - 1);
+        }
     }
-
 }
