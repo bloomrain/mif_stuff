@@ -1,22 +1,15 @@
 package lt.vu.mif.jate.tasks.task03.mt.client;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import lombok.Getter;
-import lt.vu.mif.jate.tasks.task03.mt.common.Response;
 
 /**
  * Client object: implements Java API for server-side arithmetic operations protocol.
@@ -40,20 +33,25 @@ import lt.vu.mif.jate.tasks.task03.mt.common.Response;
  * @author valdo
  */
 public class Client implements AutoCloseable {
-
-    @Getter private final Socket socket;
-    @Getter private BlockingQueue<Message> messagesToBeSend = new LinkedBlockingQueue<Message>();
-    @Getter private ConcurrentMap<Long, Message> messagesToBeReceived = new ConcurrentHashMap<Long, Message>();
-    
-    private static HashMap<InetSocketAddress, Integer> connections = new HashMap<InetSocketAddress, Integer>();
-    private InetSocketAddress url;
+    private BlockingQueue<Message> messagesToSend = new LinkedBlockingQueue<Message>();
+    private ConcurrentMap<Long, Message> messagesToGet = new ConcurrentHashMap<Long, Message>();
+    private final Socket socket;
+    private final InetSocketAddress url;
+    private static List<InetSocketAddress> connections = new LinkedList<InetSocketAddress>();
+    private final boolean isConnectionUsed;
     
     public Client(InetSocketAddress addr) throws IOException {
         this.socket = new Socket(addr.getAddress(), addr.getPort());
         this.url = addr;
-        (new Sender(this)).start();
-        (new Receiver(this)).start();
-        (new KeepAlive(this)).start();
+        
+        isConnectionUsed = connections.contains(url);
+        if (!isConnectionUsed) {
+            connections.add(url);
+        }
+
+        (new Sender(this.socket, messagesToSend, messagesToGet)).start();
+        (new Receiver(this.socket.getInputStream(), messagesToGet)).start();
+        (new KeepAlive(messagesToSend)).start();
     }
     
     public Long addition(Long op1, Long op2) throws ServerFunctionException, IOException {
@@ -81,12 +79,13 @@ public class Client implements AutoCloseable {
     }
 
     private Long exec(ServerFunction func, Long op1, Long op2) throws ServerFunctionException, IOException {
-        if (getConnectionsNumber() > 1) {
-            throw new IOException("Socket is in usep");
+        if (isConnectionUsed) {
+            throw new IOException("Conenction is used");
         }
         
         Message m = new Message(func, op1, op2);
-        messagesToBeSend.add(m);
+        messagesToSend.add(m);
+        
         while(m.isPending()) {
             try {
                 TimeUnit.MILLISECONDS.sleep(100);
@@ -100,26 +99,13 @@ public class Client implements AutoCloseable {
         }
         
         throw new ServerFunctionException(m.getError());
-        
-    }
-    
-    public int getConnectionsNumber() {
-        int connectionsNumber = 0;
-        if(connections.get(url) != null) {
-            connectionsNumber = connections.get(url);
-        };
-        return connectionsNumber;
     }
     
     @Override
     public void close() throws Exception {
         socket.close();
-        
-        int connectionsNumber = getConnectionsNumber();
-        connections.remove(url);
-        
-        if (connectionsNumber > 1) {
-            connections.put(url, connectionsNumber - 1);
+        if (isConnectionUsed) {
+            connections.remove(url);
         }
     }
 }

@@ -7,18 +7,16 @@
 package lt.vu.mif.jate.tasks.task03.mt.client;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author gege
  */
 public class KeepAlive extends Thread {
-    private Client client;
+    private final BlockingQueue<Message> messages;
 
-    KeepAlive(Client client) {
-        this.client = client;
+    KeepAlive(BlockingQueue<Message> messages) {
+        this.messages = messages;
     }
     
     @Override
@@ -26,8 +24,8 @@ public class KeepAlive extends Thread {
         while(!Thread.currentThread().isInterrupted()) {
             try {
                 //System.out.println("Ping...");
-                Thread.sleep(200);
-                client.getMessagesToBeSend().add(new Message(ServerFunction.Ping, 0L, 0L));
+                messages.add(new Message(ServerFunction.Ping, 0L, 0L));
+                Thread.sleep(100);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
                 interrupt();

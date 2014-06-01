@@ -8,12 +8,8 @@ package lt.vu.mif.jate.tasks.task03.mt.client;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketException;
 import java.nio.ByteBuffer;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lt.vu.mif.jate.tasks.task03.mt.common.Response;
 
 /**
@@ -24,9 +20,9 @@ public class Receiver extends Thread {
     private final InputStream source;
     private final ConcurrentMap<Long, Message> messages;
     
-    Receiver(Client client) throws IOException {
-        this.source = client.getSocket().getInputStream();
-        this.messages = client.getMessagesToBeReceived();
+    Receiver(InputStream source, ConcurrentMap<Long, Message> messages) throws IOException {
+        this.source = source;
+        this.messages = messages;
     }
     
     @Override
@@ -37,7 +33,6 @@ public class Receiver extends Thread {
                     receive();
                 }                
             } catch (Exception ex) {
-                ex.printStackTrace();
                 interrupt();
                 break;
             }
